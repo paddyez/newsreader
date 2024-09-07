@@ -1,0 +1,12 @@
+#!/bin/bash
+#rm -f *.ogg
+for i in *.wav
+do 
+  oggenc $i
+done
+readarray -d '' entries < <(printf '%s\0' *.ogg | sort -zV)
+for i in "${entries[@]}"
+do
+   ogg123 $i
+done
+#rm -f *.wav
