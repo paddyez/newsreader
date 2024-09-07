@@ -25,7 +25,7 @@ def create_audio_for_entries(parsed):
     For each news entry in the last 18 hours, create audio file and save to nachrichten als *.wav
     """
     new_items = []
-    full_text = "----\n"
+    full_text = "= News\n\n"
     for entry in parsed.entries:
         # Last 18 h
         published_time = entry.published_parsed
@@ -33,7 +33,7 @@ def create_audio_for_entries(parsed):
             text = ''
             text += entry.title + "\n"
             text += entry.summary
-            full_text = append_to_fulltext(entry, full_text, text)
+            full_text = append_to_fulltext(entry, full_text)
             date_string = time.strftime("%Y-%m-%d_%H-%M-%S", published_time)
             file_path = "nachrichten/" + date_string + "_" + entry.title + ".wav"
             # Replace all "Durchkopplungen" because it does not seem to work with tts and makes it crash!
@@ -46,18 +46,18 @@ def create_audio_for_entries(parsed):
                     tts.tts_to_file(text=text, file_path=file_path)
             except Exception as e:
                 print("There was an error: ", e)
-    print(full_text)
+    file = open("News.adoc", "w")
+    file.write(full_text)
     for new_item in new_items:
         print(f"New news item: {new_item}")
 
-def append_to_fulltext(entry, full_text, text):
+def append_to_fulltext(entry, full_text):
     """
     Just the whole Text output
     """
-    full_text += text
-    full_text += "\n" + entry.link + "\n"
-    full_text += entry.published + "\n"
-    full_text += "----\n"
+    full_text += "== " + entry.link + "[" + entry.title.replace('+', '{plus}') + "]\n\n"
+    full_text += entry.summary + "\n\n"
+    full_text += entry.published + "\n\n"
     return full_text
 
 def possible_to_reduce_bandwidth(parsed):
